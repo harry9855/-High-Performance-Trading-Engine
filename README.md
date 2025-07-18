@@ -61,13 +61,126 @@ The **High Performance Trading Engine** is a real-time simulation of a financial
 ```cpp
 OrderBook engine;
 
-engine.placeOrder("LIMIT", "BUY", 100, 10);    // Buy 10 units @ 100
-engine.placeOrder("LIMIT", "SELL", 101, 5);    // Sell 5 units @ 101
-engine.placeOrder("MARKET", "SELL", 5);        // Market Sell
+# Place a LIMIT BUY order: Buy 100 shares at ₹10 by Trader T1
+> LIMIT BUY 100 10 T1
 
-engine.modifyOrder(10001, 20);                 // Modify order quantity
-engine.cancelOrder(10002);                     // Cancel an order
+# Place a LIMIT SELL order: Sell 100 shares at ₹10 by Trader T2
+> LIMIT SELL 100 10 T2
 
-engine.printOrderBook();                       // View order book
-engine.printTradeHistory();                    // All executed trades
-engine.printPnL();                             // Real-time PnL & Holdings
+# Matches both orders (T1 buys from T2). Displays order book and trade history
+> SHOW
+
+# Place a MARKET BUY order: Buy 5 shares at the best available price by Trader T3
+> MARKET BUY 5 T3
+
+# Cancel an existing order by ID (e.g., order ID 1)
+> CANCEL 1
+
+# Modify order with ID 2: change quantity to 20 and price to ₹105
+> MODIFY 2 20 105
+
+# Display all open/pending orders with details
+> SHOW ORDERS
+
+# Exit the trading engine
+> EXIT
+```
+## 🖼️ Screenshot
+
+![CLI Screenshot](https://github.com/harry9855/-High-Performance-Trading-Engine/blob/main/SampleOutput/Sample.png)  
+*Live matching demo via terminal input*
+
+---
+
+## 📚 Use Case
+
+- 🔍 Learn the internal logic of trading platforms like Zerodha, AngelOne, and IB
+- 🎓 Use in final year/portfolio projects for job interviews
+- ⚙️ Backend core for your Algo Trading bots
+- 🧪 Simulate order flow for backtesting
+
+---
+
+## 🏁 Getting Started
+
+### Windows (Visual Studio)
+- Open `.sln` or `.vcxproj` file
+- Build project (Debug/Release)
+- Run `main.cpp`
+
+### Linux/macOS
+```bash
+g++ src/*.cpp main.cpp -o trading_engine
+./trading_engine
+```
+
+---
+##📂 Folder Structure
+```
+High_Performance_Trading_Engine/
+├── include/
+│   ├── order.h
+│   ├── order_book.h
+│   └── engine.h
+├── src/
+│   ├── order.cpp
+│   ├── order_book.cpp
+│   └── engine.cpp
+├── main.cpp
+├── screenshots/
+│   └── cli_demo.png
+├── README.md
+└── db_config.sql (optional)
+```
+---
+
+## 🔧 How It Works
+🧾 Accepts user input via CLI:
+   - Supported commands: BUY, SELL, MODIFY, CANCEL
+
+📚 Maintains separate order books:
+   - Uses std::map to keep prices sorted
+   - Uses std::queue to preserve FIFO (time priority) within each price level
+
+🤝 Matches incoming orders:
+   - Matches BUY with best available SELL (and vice versa)
+   - Follows price-time priority to ensure fairness
+
+💰 Tracks:
+   - Holdings (net quantity for each side)
+   - Realized and Unrealized Profit & Loss (PnL)
+
+🖥️ Outputs:
+   - Live status of the order book
+   - Executed trades and updated PnL
+
+## ❓ FAQ
+
+**Q1: Is it connected to live markets?**  
+No. This project simulates a local matching engine. However, it can be extended to connect with APIs like Angel One SmartAPI or Zerodha Kite.
+
+---
+
+**Q2: How is FIFO maintained?**  
+Orders are stored in a `std::queue` at each price level inside a `std::map`, ensuring that the earliest orders (by time) are matched first at the same price — thus preserving Price-Time Priority (FIFO).
+
+---
+
+**Q3: Is PnL real-time?**  
+Yes.  
+- Realized PnL is calculated and updated with every successful trade.  
+- Unrealized PnL is estimated based on the current best market price in the opposite order book.
+
+---
+
+**Q4: Can I build a bot on top of this?**  
+Absolutely.  
+This engine is the core of a matching system. You can integrate it with:
+- Automated trading logic (bots/algos)
+- Live API feeds (e.g., Angel One)
+- GUI or web dashboards
+- Historical data for backtesting
+
+---
+
+
